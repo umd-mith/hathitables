@@ -1,3 +1,4 @@
 pytest
+hathilda
 requests
 beautifulsoup4
