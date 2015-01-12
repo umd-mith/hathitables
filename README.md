@@ -9,7 +9,7 @@ More context for this work can be found at MITH's page for the
 If you want to get CSV for a given HathiTrust collection you can use
 hathitables on the command line:
 
-    hathitables.py 1761339300
+    % hathitables.py 1761339300 > 1761339300.csv
 
 If you'd rather use it programatically from Python you can do this:
 
