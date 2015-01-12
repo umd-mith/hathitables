@@ -39,7 +39,7 @@ class Collection():
         """
         Create a HathiTrust collection using its identifier at hathitrust.org.
         """
-
+        self.id = id
         self.url = 'http://babel.hathitrust.org/cgi/mb?a=listis;c=' + id
         resp = requests.get(self.url)
         if resp.status_code != 200:
