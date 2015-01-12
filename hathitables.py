@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import re
+import sys
 import hathilda
 import requests
 import unicodecsv
@@ -51,7 +52,7 @@ class Collection():
         self.status = self._text('.status')
         self.pages = int(self._text('.PageWidget > li', pos=-2, default=0))
 
-    def items(self):
+    def volumes(self):
         for url in self.item_urls():
             u = urlparse(url)
             q = parse_qs(u.query)
@@ -60,7 +61,7 @@ class Collection():
     def write_csv(self, fh):
         csv = unicodecsv.writer(fh)
         csv.writerow(["url", "title"])
-        for item in self.items():
+        for item in self.volumes():
             csv.writerow([
                 item['@id'],
                 item['title']
@@ -82,6 +83,6 @@ class Collection():
         return text
 
 if __name__ == "__main__":
-    for c in collections():
-        print c.title
-        break
+    collection_id = sys.argv[1]
+    c = Collection(collection_id)
+    c.write_csv(sys.stdout)

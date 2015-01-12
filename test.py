@@ -4,10 +4,10 @@ import hathitables
 
 from StringIO import StringIO
 
-def atest_collection_ids():
+def test_collection_ids():
     assert len(list(hathitables.collection_ids())) > 1800
 
-def atest_collection():
+def test_collection():
     c = hathitables.Collection('715130871')
     assert c.id == '715130871'
     assert c.url == 'http://babel.hathitrust.org/cgi/mb?a=listis;c=715130871'
@@ -26,10 +26,10 @@ def atest_collection():
             break
     assert count == 26
 
-def atest_items():
+def test_volumes():
     coll = hathitables.Collection('1761339300')
     count = 0
-    for item in coll.items():
+    for item in coll.volumes():
         count += 1
         assert '@id' in item
     assert count == 4
@@ -43,6 +43,7 @@ def test_csv():
     for row in unicodecsv.DictReader(fh):
         count +=1 
         assert 'title' in row
+        # TODO: look for more than just title!
         print row
     assert count == 4 
     
