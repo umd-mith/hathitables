@@ -1,14 +1,16 @@
 #!/usr/bin/env python
 
+from six import StringIO
+from six.moves.urllib.parse import urlparse, urljoin, parse_qs
+
 import re
 import sys
 import hathilda
 import requests
 import unicodecsv
 
-from urlparse import urljoin
 from bs4 import BeautifulSoup
-from urlparse import urlparse, urljoin, parse_qs
+
 
 def collections():
     """

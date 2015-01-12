@@ -2,7 +2,8 @@ import pytest
 import unicodecsv
 import hathitables
 
-from StringIO import StringIO
+from six import StringIO
+
 
 def test_collection_ids():
     assert len(list(hathitables.collection_ids())) > 1800
@@ -43,7 +44,5 @@ def test_csv():
     for row in unicodecsv.DictReader(fh):
         count +=1 
         assert 'title' in row
-        # TODO: look for more than just title!
-        print row
     assert count == 4 
     
