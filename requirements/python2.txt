@@ -1,6 +1,6 @@
 six
 pytest
-hathilda>=0.0.5
+hathilda
 requests
 unicodecsv
 beautifulsoup4

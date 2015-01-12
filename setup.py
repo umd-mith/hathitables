@@ -16,6 +16,11 @@ class PyTest(Command):
         errno = pytest.main("test.py")
         sys.exit(errno)
 
+if sys.version_info[0] < 3:
+    dependecies = open('requirements/python2.txt').read().split()
+else:
+    dependecies = open('requirements/python3.txt').read().split()
+
 setup(
     name = 'hathitables',
     version = '0.0.1',
@@ -27,6 +32,5 @@ setup(
     cmdclass = {'test': PyTest},
     tests_require=['pytest'],
     scripts = ['hathitables.py'],
-    install_requires = ['requests', 'hathilda', 'unicodecsv', 
-        'beautifulsoup4'],
+    install_requires = dependencies
 )
