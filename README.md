@@ -11,7 +11,7 @@ hathitables on the command line:
 
     % hathitables.py 1761339300 > 1761339300.csv
 
-If you'd rather use it programatically from Python you can do this:
+If you want you can also use hathitables programatically from Python:
 
 ```python
 import hathitables
