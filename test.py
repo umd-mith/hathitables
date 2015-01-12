@@ -1,9 +1,13 @@
+import sys
 import pytest
-import unicodecsv
 import hathitables
 
 from six import StringIO
 
+if sys.version_info[0] < 3:
+    import unicodecsv as csv
+else:
+    import csv
 
 def test_collection_ids():
     assert len(list(hathitables.collection_ids())) > 1800
@@ -41,7 +45,7 @@ def test_csv():
     coll.write_csv(fh)
     fh.seek(0)
     count = 0
-    for row in unicodecsv.DictReader(fh):
+    for row in csv.DictReader(fh):
         count +=1 
         assert 'title' in row
     assert count == 4 

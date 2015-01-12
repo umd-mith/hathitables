@@ -1,16 +1,20 @@
 #!/usr/bin/env python
 
-from six import StringIO
-from six.moves.urllib.parse import urlparse, urljoin, parse_qs
 
 import re
 import sys
 import hathilda
 import requests
-import unicodecsv
 
+from six import StringIO
 from bs4 import BeautifulSoup
+from six.moves.urllib.parse import urlparse, urljoin, parse_qs
 
+# only need unicodecsv for python2
+if sys.version_info[0] < 3:
+    import unicodecsv as csv
+else:
+    import csv
 
 def collections():
     """
@@ -26,7 +30,7 @@ def collection_ids():
     resp = requests.get("http://babel.hathitrust.org/cgi/mb?colltype=updated")
     if resp.status_code == 200:
         patt = re.compile("\[\];\n +html.push\('(\d+)'\);", re.MULTILINE) 
-        for id in re.findall(patt, resp.content):
+        for id in re.findall(patt, resp.content.decode()):
             yield id
 
 class Collection():
@@ -61,10 +65,10 @@ class Collection():
             yield hathilda.get_volume(q['id'][0])
 
     def write_csv(self, fh):
-        csv = unicodecsv.writer(fh)
-        csv.writerow(["url", "title"])
+        writer = csv.writer(fh)
+        writer.writerow(["url", "title"])
         for item in self.volumes():
-            csv.writerow([
+            writer.writerow([
                 item['@id'],
                 item['title']
             ])
