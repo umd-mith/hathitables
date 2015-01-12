@@ -2,3 +2,6 @@ language: python
 script: python setup.py test
 python:
   - "2.7"
+  - "3.4"
+notifications:
+  slack: mith-umd:PMTdvEiXGPXz0QMWsjwO34NU
