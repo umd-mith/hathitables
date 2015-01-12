@@ -30,7 +30,7 @@ def collection_ids():
     resp = requests.get("http://babel.hathitrust.org/cgi/mb?colltype=updated")
     if resp.status_code == 200:
         patt = re.compile("\[\];\n +html.push\('(\d+)'\);", re.MULTILINE) 
-        for id in re.findall(patt, resp.content.decode()):
+        for id in re.findall(patt, resp.content.decode('utf8')):
             yield id
 
 class Collection():
