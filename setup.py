@@ -17,9 +17,9 @@ class PyTest(Command):
         sys.exit(errno)
 
 if sys.version_info[0] < 3:
-    dependecies = open('requirements/python2.txt').read().split()
+    dependencies = open('requirements/python2.txt').read().split()
 else:
-    dependecies = open('requirements/python3.txt').read().split()
+    dependencies = open('requirements/python3.txt').read().split()
 
 setup(
     name = 'hathitables',
