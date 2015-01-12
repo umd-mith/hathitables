@@ -1,10 +1,13 @@
 import pytest
+import unicodecsv
 import hathitables
 
-def test_collection_ids():
+from StringIO import StringIO
+
+def atest_collection_ids():
     assert len(list(hathitables.collection_ids())) > 1800
 
-def test_collection():
+def atest_collection():
     c = hathitables.Collection('715130871')
     assert c.id == '715130871'
     assert c.url == 'http://babel.hathitrust.org/cgi/mb?a=listis;c=715130871'
@@ -22,3 +25,24 @@ def test_collection():
         if count > 25:
             break
     assert count == 26
+
+def atest_items():
+    coll = hathitables.Collection('1761339300')
+    count = 0
+    for item in coll.items():
+        count += 1
+        assert '@id' in item
+    assert count == 4
+
+def test_csv():
+    coll = hathitables.Collection('1761339300')
+    fh = StringIO()
+    coll.write_csv(fh)
+    fh.seek(0)
+    count = 0
+    for row in unicodecsv.DictReader(fh):
+        count +=1 
+        assert 'title' in row
+        print row
+    assert count == 4 
+    
