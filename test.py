@@ -19,7 +19,7 @@ def test_collection():
 
     # test that paging works
     count = 0
-    for url in c.record_urls():
+    for url in c.volume_urls():
         assert 'babel' in url
         count += 1
         if count > 25:

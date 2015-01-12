@@ -53,7 +53,7 @@ class Collection():
         self.pages = int(self._text('.PageWidget > li', pos=-2, default=0))
 
     def volumes(self):
-        for url in self.item_urls():
+        for url in self.volume_urls():
             u = urlparse(url)
             q = parse_qs(u.query)
             yield hathilda.get_volume(q['id'][0])
@@ -67,7 +67,7 @@ class Collection():
                 item['title']
             ])
 
-    def item_urls(self):
+    def volume_urls(self):
         for pg in range(1, self.pages + 1):
             url = self.url + ';sort=title_a;pn=%i;sz=100' % pg
             resp = requests.get(url)
