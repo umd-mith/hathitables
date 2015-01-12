@@ -1,7 +1,10 @@
 language: python
-script: python setup.py test
 python:
   - "2.7"
   - "3.4"
+install:
+  - python setup.py install
+script: 
+  - python setup.py test
 notifications:
   slack: mith-umd:PMTdvEiXGPXz0QMWsjwO34NU
