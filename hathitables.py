@@ -66,12 +66,24 @@ class Collection():
 
     def write_csv(self, fh):
         writer = csv.writer(fh)
-        writer.writerow(["url", "title"])
+        writer.writerow(["title", "creator", "issuance", "publisher", "url",
+            "contributor1", "contributor2", "contributor3", "contributor4",
+            "contributor5", "subject1", "subject2", "subject3", "subject4",
+            "subject5", "description1", "description2", "description3",
+            "description4", "description5"])
+
         for item in self.volumes():
-            writer.writerow([
+            row = [
+                item['title'],
+                item['creator'],
+                item.get('issuance'),
+                item.get('publisher'),
                 item['@id'],
-                item['title']
-            ])
+            ]
+            pad(row, item.get('contributor'), 5)
+            pad(row, item.get('subject'), 5)
+            pad(row, item.get('description'), 5)
+            writer.writerow(row)
 
     def volume_urls(self):
         for pg in range(1, self.pages + 1):
@@ -87,6 +99,15 @@ class Collection():
         if len(results) > 0:
             text = results[pos].text.strip()
         return text
+
+def pad(l1, l2, n):
+    if l2 == None:
+        l2 = []
+    for i in range(0, n):
+        if i < len(l2):
+            l1.append(l2[i])
+        else:
+            l1.append(None)
 
 if __name__ == "__main__":
     collection_id = sys.argv[1]

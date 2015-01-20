@@ -48,5 +48,9 @@ def test_csv():
     for row in csv.DictReader(fh):
         count +=1 
         assert 'title' in row
+        assert 'creator' in row
+        assert 'issuance' in row
+        assert 'subject1' in row
+        assert 'contributor1' in row
+        assert 'description1' in row
     assert count == 4 
-    
