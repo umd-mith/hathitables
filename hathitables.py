@@ -4,6 +4,7 @@
 import re
 import sys
 import json
+import logging
 import argparse
 import hathilda
 import requests
@@ -22,6 +23,7 @@ http.mount('http://babel.hathitrust.org', HTTPAdapter(max_retries=10))
 http.mount('http://catalog.hathitrust.org', HTTPAdapter(max_retries=10))
 
 # only need unicodecsv for python2
+
 if sys.version_info[0] < 3:
     import unicodecsv as csv
 else:
@@ -63,18 +65,11 @@ class Collection():
         # TODO: would be nice to be able to get modified if not passed in
         self.modified = modified
         self.url = 'http://babel.hathitrust.org/cgi/mb?a=listis;c=' + id
-
-        tries = 0
-        resp = None
-        while tries < 10:
-            try:
-                resp = http.get(self.url)
-                break
-            except Exception as e:
-                logging.error("unable to fetch %s: %s", url, e)
-                tries += 1
+        resp = http.get(self.url)
+        logging.info("fetching collection %s", id)
         
         if not resp or resp.status_code != 200:
+            logging.error("received %s when fetching %s", resp.status_code, id)
             raise Exception("unable to fetch collection id=%s" % id)
 
         self.soup = BeautifulSoup(resp.content)
@@ -84,19 +79,16 @@ class Collection():
         self.status = self._text('.status')
         self.pages = int(self._text('.PageWidget > li', pos=-2, default=0))
 
-    @property
-    def json(self): 
-        return {
-            "dc:title": self.title,
-            "dc:creator": self.owner,
-            "dc:publisher": "HathiTrust"
-        }
-
     def volumes(self):
         for url in self.volume_urls():
             u = urlparse(url)
             q = parse_qs(u.query)
-            yield hathilda.get_volume(q['id'][0])
+            vol_id = q['id'][0]
+            logging.info("fetching volume %s", vol_id)
+            yield hathilda.get_volume(vol_id)
+
+    def write_json(self, fh):
+        fh.write(json.dumps(self.json), indent=2)
 
     def write_csv(self, fh):
         writer = csv.writer(fh)
@@ -127,6 +119,13 @@ class Collection():
             for link in soup.select('.result-access-link'):
                 yield urljoin(url, link.select('li > a')[-1]['href'])
 
+    def json(self): 
+        return {
+            "dc:title": self.title,
+            "dc:creator": self.owner,
+            "dc:publisher": "HathiTrust"
+        }
+
     def _text(self, q, default='', pos=0):
         text = default
         results = self.soup.select(q)
@@ -152,5 +151,6 @@ if __name__ == "__main__":
     c = Collection(args.collection_id)
     if args.metadata:
         sys.stdout.write(json.dumps(c.json))
+        c.write_json(sys.stdout)
     else:
         c.write_csv(sys.stdout)

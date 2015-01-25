@@ -1,5 +1,6 @@
 import sys
 import pytest
+import logging
 import datetime
 import hathitables
 
@@ -9,6 +10,8 @@ if sys.version_info[0] < 3:
     import unicodecsv as csv
 else:
     import csv
+
+logging.basicConfig(filename='test.log', level=logging.DEBUG)
 
 def test_collection_ids():
     assert len(list(hathitables.collection_ids())) > 1800
@@ -36,6 +39,9 @@ def test_collection():
         if count > 25:
             break
     assert count == 26
+
+    # see that json is minimally working
+    assert c.json()['dc:title'] == '19-20th C. Psychology Texts-Gen'
 
 def test_volumes():
     coll = hathitables.Collection('1761339300')
