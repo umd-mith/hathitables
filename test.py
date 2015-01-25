@@ -1,5 +1,6 @@
 import sys
 import pytest
+import datetime
 import hathitables
 
 from six import StringIO
@@ -11,6 +12,11 @@ else:
 
 def test_collection_ids():
     assert len(list(hathitables.collection_ids())) > 1800
+
+def test_collections():
+    c = next(hathitables.collections())
+    assert c.modified is not None
+    assert type(c.modified) == datetime.datetime 
 
 def test_collection():
     c = hathitables.Collection('715130871')

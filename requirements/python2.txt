@@ -4,3 +4,4 @@ hathilda
 requests
 unicodecsv
 beautifulsoup4
+python-dateutil
