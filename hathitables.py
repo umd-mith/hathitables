@@ -3,6 +3,8 @@
 
 import re
 import sys
+import json
+import argparse
 import hathilda
 import requests
 
@@ -82,7 +84,8 @@ class Collection():
         self.status = self._text('.status')
         self.pages = int(self._text('.PageWidget > li', pos=-2, default=0))
 
-    def jsonld(self): 
+    @property
+    def json(self): 
         return {
             "dc:title": self.title,
             "dc:creator": self.owner,
@@ -141,6 +144,13 @@ def pad(l1, l2, n):
             l1.append(None)
 
 if __name__ == "__main__":
-    collection_id = sys.argv[1]
-    c = Collection(collection_id)
-    c.write_csv(sys.stdout)
+    parser = argparse.ArgumentParser()
+    parser.add_argument("collection_id", help="the HathiTrust collection id")
+    parser.add_argument("--metadata", action="store_true", help="output collection metadata as json")
+    args = parser.parse_args()
+
+    c = Collection(args.collection_id)
+    if args.metadata:
+        sys.stdout.write(json.dumps(c.json))
+    else:
+        c.write_csv(sys.stdout)
