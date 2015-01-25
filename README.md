@@ -10,6 +10,9 @@ If you want to get CSV for a given HathiTrust collection you can use
 hathitables on the command line:
 
     % hathitables.py 1761339300 > 1761339300.csv
+
+And here's how to write the metadata where a CSVW client can find it:
+
     % hathitables.py --metadata 1761339300 > 1761339300.csv-metadata.json
 
 If you want you can also use hathitables programatically from Python:
