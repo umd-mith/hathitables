@@ -64,7 +64,7 @@ class Collection():
         self.id = id
         # TODO: would be nice to be able to get modified if not passed in
         self.modified = modified
-        self.url = 'http://babel.hathitrust.org/cgi/mb?a=listis;c=' + id
+        self.url = 'http://babel.hathitrust.org/cgi/mb?a=listis;c=%s;sz=100' % id
         resp = http.get(self.url)
         logging.info("fetching collection %s", id)
         
