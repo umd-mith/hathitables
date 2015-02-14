@@ -1,5 +1,9 @@
 #!/usr/bin/env python
 
+"""
+hathitables is a module for working with HathiTrust collections as CSV.
+"""
+
 
 import re
 import sys
