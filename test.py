@@ -40,9 +40,6 @@ def test_collection():
             break
     assert count == 26
 
-    # see that json is minimally working
-    assert c.json()['dc:title'] == '19-20th C. Psychology Texts-Gen'
-
 def test_volumes():
     coll = hathitables.Collection('1761339300')
     count = 0
@@ -66,3 +63,22 @@ def test_csv():
         assert 'contributor1' in row
         assert 'description1' in row
     assert count == 4 
+
+def test_metadata(): 
+    coll = hathitables.Collection('1761339300')
+    meta = coll.metadata()
+
+    assert meta['@context']['@vocab'] == 'http://www.w3.org/ns/csvw#'
+    assert meta['@context']['dc'] == 'http://purl.org/dc/terms/'
+    assert meta['@context']['dcat'] == 'http://www.w3.org/ns/dcat#'
+    assert meta['@context']['prov'] == 'http://www.w3.org/ns/prov#'
+    assert meta['@context']['xsd'] == 'http://www.w3.org/2001/XMLSchema#'
+    assert meta['@context']['schema'] == 'http://schema.org'
+
+    assert meta['@type'] == 'Table'
+    assert meta['dc:title'] == 'Dogen'
+    assert meta['dc:description'] == 'Random collection of Dogen books.'
+    assert meta['dcat:distribution']['dcat:downloadURL'] == '1761339300.csv'
+    assert meta['dc:publisher']['schema:name'] == 'HathiTrust'
+    assert meta['dc:publisher']['schema:url'] == 'http://hathitrust.org'
+

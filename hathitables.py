@@ -119,12 +119,36 @@ class Collection():
             for link in soup.select('.result-access-link'):
                 yield urljoin(url, link.select('li > a')[-1]['href'])
 
-    def json(self): 
-        return {
+    def metadata(self): 
+        """
+        Returns CSVW metadata for the collection as JSON-LD.
+        """
+        meta = {
+            "@context": {
+                "@vocab": "http://www.w3.org/ns/csvw#",
+                "dc": "http://purl.org/dc/terms/",
+                "dcat": "http://www.w3.org/ns/dcat#",
+                "prov": "http://www.w3.org/ns/prov#",
+                "xsd": "http://www.w3.org/2001/XMLSchema#",
+                "schema": "http://schema.org"
+            },
+            "@type": "Table",
             "dc:title": self.title,
             "dc:creator": self.owner,
-            "dc:publisher": "HathiTrust"
+            "dc:publisher": {
+                "schema:name": "HathiTrust",
+                "schema:url": "http://hathitrust.org"
+            },
+            "dcat:distribution": {
+                "dcat:downloadURL": "%s.csv" % self.id
+            }
         }
+
+        if self.description:
+            meta['dc:description'] = self.description
+
+        return meta
+
 
     def _text(self, q, default='', pos=0):
         text = default
