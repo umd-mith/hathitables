@@ -23,6 +23,6 @@ import hathitables
 collection = hathitables.Collection('1761339300')
 
 collection.write_csv(open("file.csv", "w"))
-collection.write_json(open("file.csv-metadata.json", "w"))
+collection.write_metadata(open("file.csv-metadata.json", "w"))
 ```
 

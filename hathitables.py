@@ -62,8 +62,8 @@ class Collection():
         Create a HathiTrust collection using its identifier at hathitrust.org.
         """
         self.id = id
-        # TODO: would be nice to be able to get modified if not passed in
-        self.modified = modified
+        self.modified = modified or self._get_modified()
+
         self.url = 'http://babel.hathitrust.org/cgi/mb?a=listis;c=%s;sz=100' % id
         resp = http.get(self.url)
         logging.info("fetching collection %s", id)
@@ -87,24 +87,25 @@ class Collection():
             logging.info("fetching volume %s", vol_id)
             yield hathilda.get_volume(vol_id)
 
-    def write_json(self, fh):
-        fh.write(json.dumps(self.json), indent=2)
+    def write_metadata(self, fh):
+        fh.write(json.dumps(self.metadata(), indent=2))
 
     def write_csv(self, fh):
         writer = csv.writer(fh)
-        writer.writerow(["title", "creator", "issuance", "publisher", "url",
+        writer.writerow(["id", "title", "creator", "issuance", "publisher",
             "contributor1", "contributor2", "contributor3", "contributor4",
             "contributor5", "subject1", "subject2", "subject3", "subject4",
             "subject5", "description1", "description2", "description3",
             "description4", "description5"])
 
         for item in self.volumes():
+            vol_id = item['@id'].split('/')[-1]
             row = [
+                vol_id,
                 item.get('title'),
                 item.get('creator'),
                 item.get('issuance'),
                 item.get('publisher'),
-                item['@id'],
             ]
             pad(row, item.get('contributor'), 5)
             pad(row, item.get('subject'), 5)
@@ -141,11 +142,120 @@ class Collection():
             },
             "dcat:distribution": {
                 "dcat:downloadURL": "%s.csv" % self.id
+            },
+            "tableSchema": {
+                "primaryKey": "id",
+                "aboutUrl": "http://hdl.handle.net/2027/{id}",
+                "columns": [
+                    {
+                        "name": "id",
+                        "required": True,
+                        "unique": True
+                    },
+                    {
+                        "name": "title",
+                        "datatype": "string",
+                        "propertyUrl": "http://purl.org/dc/terms/title"
+                    },
+                    {
+                        "name": "creator",
+                        "datatype": "string",
+                        "propertyUrl": "http://purl.org/dc/terms/creator"
+                    },
+                    {
+                        "name": "issuance",
+                        "datatype": "string",
+                        "propertyUrl": "http://purl.org/dc/terms/issuance"
+                    },
+                    {
+                        "name": "publisher",
+                        "datatype": "string",
+                        "propertyUrl": "http://purl.org/dc/terms/publisher"
+                    },
+                    {
+                        "name": "contributor1",
+                        "datatype": "string",
+                        "propertyUrl": "http://purl.org/dc/terms/contributor"
+                    },
+                    {
+                        "name": "contributor2",
+                        "datatype": "string",
+                        "propertyUrl": "http://purl.org/dc/terms/contributor"
+                    },
+                    {
+                        "name": "contributor3",
+                        "datatype": "string",
+                        "propertyUrl": "http://purl.org/dc/terms/contributor"
+                    },
+                    {
+                        "name": "contributor4",
+                        "datatype": "string",
+                        "propertyUrl": "http://purl.org/dc/terms/contributor"
+                    },
+                    {
+                        "name": "contributor5",
+                        "datatype": "string",
+                        "propertyUrl": "http://purl.org/dc/terms/contributor"
+                    },
+                    {
+                        "name": "subject1",
+                        "datatype": "string",
+                        "propertyUrl": "http://purl.org/dc/terms/subject"
+                    },
+                    {
+                        "name": "subject2",
+                        "datatype": "string",
+                        "propertyUrl": "http://purl.org/dc/terms/subject"
+                    },
+                    {
+                        "name": "subject3",
+                        "datatype": "string",
+                        "propertyUrl": "http://purl.org/dc/terms/subject"
+                    },
+                    {
+                        "name": "subject4",
+                        "datatype": "string",
+                        "propertyUrl": "http://purl.org/dc/terms/subject"
+                    },
+                    {
+                        "name": "subject5",
+                        "datatype": "string",
+                        "propertyUrl": "http://purl.org/dc/terms/subject"
+                    },
+                    {
+                        "name": "description1",
+                        "datatype": "string",
+                        "propertyUrl": "http://purl.org/dc/terms/description"
+                    },
+                    {
+                        "name": "description2",
+                        "datatype": "string",
+                        "propertyUrl": "http://purl.org/dc/terms/description"
+                    },
+                    {
+                        "name": "description3",
+                        "datatype": "string",
+                        "propertyUrl": "http://purl.org/dc/terms/description"
+                    },
+                    {
+                        "name": "description4",
+                        "datatype": "string",
+                        "propertyUrl": "http://purl.org/dc/terms/description"
+                    },
+                    {
+                        "name": "description5",
+                        "datatype": "string",
+                        "propertyUrl": "http://purl.org/dc/terms/description"
+                    }
+                ]
             }
         }
 
         if self.description:
             meta['dc:description'] = self.description
+
+        if self.modified: 
+            meta['dc:modified'] = self.modified.strftime("%Y-%m-%dT%H:%M:%SZ")
 
         return meta
 
@@ -156,6 +266,18 @@ class Collection():
         if len(results) > 0:
             text = results[pos].text.strip()
         return text
+
+    def _get_modified(self, no_cache=False):
+        """
+        Returns the last modified time for the collection. The value
+        can be returned from a cache unless no_cache is True.
+        """
+        if no_cache or not hasattr(Collection, "_modified"):
+            Collection._modified = {}
+            for id, modified in collection_ids():
+                Collection._modified[id] = modified
+        return Collection._modified.get(self.id)
+
 
 def pad(l1, l2, n):
     if l2 == None:
@@ -174,7 +296,6 @@ if __name__ == "__main__":
 
     c = Collection(args.collection_id)
     if args.metadata:
-        sys.stdout.write(json.dumps(c.json))
-        c.write_json(sys.stdout)
+        c.write_metadata(sys.stdout)
     else:
         c.write_csv(sys.stdout)

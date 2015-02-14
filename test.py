@@ -81,4 +81,28 @@ def test_metadata():
     assert meta['dcat:distribution']['dcat:downloadURL'] == '1761339300.csv'
     assert meta['dc:publisher']['schema:name'] == 'HathiTrust'
     assert meta['dc:publisher']['schema:url'] == 'http://hathitrust.org'
+    assert type(meta['dc:modified']) == datetime.datetime
 
+    assert 'tableSchema' in meta
+    assert 'columns' in meta['tableSchema']
+    cols = meta['tableSchema']['columns']
+    assert cols[0]['name'] == 'id'
+    assert cols[1]['name'] == 'title'
+    assert cols[2]['name'] == 'creator'
+    assert cols[3]['name'] == 'issuance'
+    assert cols[4]['name'] == 'publisher'
+    assert cols[5]['name'] == 'contributor1'
+    assert cols[6]['name'] == 'contributor2'
+    assert cols[7]['name'] == 'contributor3'
+    assert cols[8]['name'] == 'contributor4'
+    assert cols[9]['name'] == 'contributor5'
+    assert cols[10]['name'] == 'subject1'
+    assert cols[11]['name'] == 'subject2'
+    assert cols[12]['name'] == 'subject3'
+    assert cols[13]['name'] == 'subject4'
+    assert cols[14]['name'] == 'subject5'
+    assert cols[15]['name'] == 'description1'
+    assert cols[16]['name'] == 'description2'
+    assert cols[17]['name'] == 'description3'
+    assert cols[18]['name'] == 'description4'
+    assert cols[19]['name'] == 'description5'
