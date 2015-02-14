@@ -5,6 +5,7 @@ import datetime
 import hathitables
 
 from six import StringIO
+from dateutil.parser import parse as parse_date
 
 if sys.version_info[0] < 3:
     import unicodecsv as csv
@@ -81,7 +82,11 @@ def test_metadata():
     assert meta['dcat:distribution']['dcat:downloadURL'] == '1761339300.csv'
     assert meta['dc:publisher']['schema:name'] == 'HathiTrust'
     assert meta['dc:publisher']['schema:url'] == 'http://hathitrust.org'
-    assert type(meta['dc:modified']) == datetime.datetime
+
+    modified = parse_date(meta['dc:modified'])
+    assert modified.year == 2015
+    assert modified.month == 1
+    assert modified.day == 10
 
     assert 'tableSchema' in meta
     assert 'columns' in meta['tableSchema']
