@@ -1,4 +1,5 @@
 six
+ptree
 pytest
 hathilda
 requests
