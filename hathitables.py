@@ -93,7 +93,11 @@ class Collection():
             q = parse_qs(u.query)
             vol_id = q['id'][0]
             logging.info("fetching volume %s", vol_id)
-            yield hathilda.get_volume(vol_id)
+            vol = hathilda.get_volume(vol_id)
+            if vol:
+                yield vol
+            else:
+                logging.error("unable to get volume %s", vol_id)
 
     def write_metadata(self, fh):
         fh.write(json.dumps(self.metadata(), indent=2))
