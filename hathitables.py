@@ -8,6 +8,7 @@ hathitables is a module for working with HathiTrust collections as CSV.
 import re
 import sys
 import json
+import pytz
 import logging
 import argparse
 import hathilda
@@ -51,7 +52,10 @@ def collection_ids():
     resp = http.get("http://babel.hathitrust.org/cgi/mb?colltype=updated")
     if resp.status_code == 200:
         for m in re.finditer(patt, resp.content.decode('utf8')):
-            yield m.group(1), parse_date(m.group(3))
+            # no timezone info, so we force UTC
+            t = parse_date(m.group(3))
+            t = t.replace(tzinfo=pytz.UTC)
+            yield m.group(1), t
 
 class Collection():
     """

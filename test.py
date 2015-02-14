@@ -21,6 +21,7 @@ def test_collections():
     c = next(hathitables.collections())
     assert c.modified is not None
     assert type(c.modified) == datetime.datetime 
+    assert c.modified.tzinfo
 
 def test_collection():
     c = hathitables.Collection('715130871')

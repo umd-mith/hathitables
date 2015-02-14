@@ -1,4 +1,5 @@
 six
+pytz
 ptree
 pytest
 hathilda
