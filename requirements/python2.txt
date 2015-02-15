@@ -1,6 +1,5 @@
 six
 pytz
-ptree
 pytest
 hathilda
 requests
